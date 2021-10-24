@@ -1,56 +1,67 @@
-import React from 'react';
-import logo from './logo.svg';
-import { Counter } from './features/counter/Counter';
+import React,{useEffect} from 'react';
+
 import './App.css';
+import { useDispatch } from 'react-redux';
+import SideDrawer from './components/SideDrawer';
+import Header from './components/Header';
+import Home from './components/Home'
+import { setHeaderBackground } from './features/header/headerSclice';
+import { selectShowBackdrop } from './features/backdrop/BackdropSlice';
+import { useSelector } from 'react-redux';
+import {
+  BrowserRouter as Router,
+  Switch,
+  Route,
+
+} from "react-router-dom";
+import About from './components/About';
+import Join from './components/Join';
+import Backdrop from './components/Backdrop';
+import Message from './components/Message';
+import NewsFeed from './components/NewsFeed';
+import User from './components/User';
 
 function App() {
+  const dispatch=useDispatch()
+  const showBD=useSelector(selectShowBackdrop)
+  
+  useEffect(()=>{
+    window.addEventListener("scroll",()=>{
+      if(window.scrollY>0){
+        dispatch(setHeaderBackground(true))
+      }
+      else{
+        dispatch(setHeaderBackground(false))
+      }
+    })
+  },[dispatch])
+  
   return (
     <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <Counter />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <span>
-          <span>Learn </span>
-          <a
-            className="App-link"
-            href="https://reactjs.org/"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            React
-          </a>
-          <span>, </span>
-          <a
-            className="App-link"
-            href="https://redux.js.org/"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Redux
-          </a>
-          <span>, </span>
-          <a
-            className="App-link"
-            href="https://redux-toolkit.js.org/"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Redux Toolkit
-          </a>
-          ,<span> and </span>
-          <a
-            className="App-link"
-            href="https://react-redux.js.org/"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            React Redux
-          </a>
-        </span>
-      </header>
+      {showBD?<Backdrop />:null}
+      <Router>
+        <Header />
+        <SideDrawer />
+        <Message />
+        <Switch>
+        <Route exact path="/">
+          <Home />
+          <About />
+        </Route>
+        <Route path="/join">
+          <Join />
+        </Route>
+        <Route path="/newsFeed">
+          <NewsFeed />
+        </Route>
+        <Route path="/user/:username">
+          <User />
+          
+        </Route>
+
+        </Switch>
+      </Router>
+
     </div>
   );
 }
